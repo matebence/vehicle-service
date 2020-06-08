@@ -32,7 +32,12 @@
     "helmet": "^3.22.0",
     "ip": "^1.1.5",
     "mongoose": "^5.9.18",
-    "mongoose-delete": "^0.5.2"
+    "mongoose-delete": "^0.5.2",
+    "node-fetch": "^2.6.0",
+    "zipkin": "^0.22.0",
+    "zipkin-context-cls": "^0.22.0",
+    "zipkin-instrumentation-express": "^0.22.0",
+    "zipkin-transport-http": "^0.22.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

@@ -1,2 +1,28 @@
-[
-]
+{
+  "types": [
+    {
+      "_id": "5ede132ad2316a1df0dd95f0",
+      "name": "Bicykel"
+    },
+    {
+      "_id": "5ede132ad2316a1df0dd95f1",
+      "name": "Osobné motorové vozidlo"
+    },
+    {
+      "_id": "5ede132ad2316a1df0dd95f2",
+      "name": "Nákladné motorové vozidlo"
+    }
+  ],
+  "vehicles": [
+    {
+      "name": "VW Golf",
+      "courierId": "1",
+      "typeId": "5ede132ad2316a1df0dd95f1"
+    },
+    {
+      "name": "Author A-Gang SE",
+      "courierId": "1",
+      "typeId": "5ede132ad2316a1df0dd95f0"
+    }
+  ]
+}

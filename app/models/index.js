@@ -30,5 +30,16 @@ module.exports = (app, config) => {
     const database = {};
     database.mongoose = mongoose;
 
+    if (config.get('node.mongoose.create-drop')) mongoose.connection.dropDatabase(config.get('node.datasource.database'));
+
+    database.types = require("./types.model")(mongoose, mongoose.Schema, mongoose.model);
+    database.vehicles = require("./vehicles.model")(mongoose, mongoose.Schema, mongoose.model);
+
+    database.types.insertMany(data.types, (err, result) => {
+        database.vehicles.insertMany(data.vehicles, (err, result) => {
+            err ? console.log(strings.DATABASE_SEED_ERR) : console.log(strings.DATABASE_SEED)
+        });
+    });
+
     module.exports = database;
 };

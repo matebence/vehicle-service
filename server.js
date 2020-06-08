@@ -28,6 +28,13 @@ client.load({
     require("./app/component/eureka.component")(app, config);
     require("./app/component/zipkin.component")(app, config);
 
+    require("./app/routes/auth.routes")(app, config);
+
+    require("./app/routes/vehicles.routes")(app);
+    require("./app/routes/types.routes")(app);
+
+    require("./app/routes/errors.routes")(app);
+
     return app.listen(node.server.port);
 }).then(() => {
     console.log(`Server beží na porte ${node.server.port}`)

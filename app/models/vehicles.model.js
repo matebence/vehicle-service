@@ -13,7 +13,7 @@ module.exports = (mongoose, schema, model) => {
             typeId: {
                 type: schema.Types.ObjectId,
                 ref: "types",
-                unique: true
+                required: true
             }
         },
         {collection: "vehicles", timestamps: {createdAt: 'createdAt'}}

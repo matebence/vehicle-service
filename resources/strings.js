@@ -10,4 +10,30 @@ module.exports = {
     EUREKA_ERR: `Eureka service registrácia bola úspešná`,
     AUTH_REQUIRED: `Ľutujeme, ale stránka nie je k dispozícií`,
     AUTH_ERR: `Prístup odmietnutý`,
+
+    CREATE_TYPE_ERR: `Vytvorenie nového typu dopravného prostriedka sa nepodarilo`,
+    UPDATE_TYPE_ERR: `Aktualizácia typu dopravného prostriedka sa nepodarilo`,
+    DELETE_TYPE_ERR: `Odstránenie typu dopravného prostriedka sa nepodarilo`,
+    GET_TYPE_ERR: `Ľutujeme ale typ dopravného prostriedka s identifikačním číslom neexistuje`,
+    TYPE_NOT_FOUND: `Ľutujeme ale nenašiel sa žiadný typ dopravného prostriedka`,
+
+    CREATE_VEHICLE_ERR: `Vytvorenie dopravného prostriedka sa nepodarilo`,
+    UPDATE_VEHICLE_ERR: `Aktualizácia dopravného prostriedka sa nepodarilo`,
+    DELETE_VEHICLE_ERR: `Odstránenie dopravného prostriedka sa nepodarilo`,
+    GET_VEHICLE_ERR: `Ľutujeme ale dopravný prostriedok s identifikačním číslom neexistuje`,
+    VEHICLE_NOT_FOUND: `Ľutujeme ale nenašiel sa žiadný dopravný prostriedok`,
+
+    TYPE_NAME_LENGHT: `Minimálna dlžka typu dopravného prostriedka je 3 a maximalná je 64`,
+    TYPE_NAME_ASCII: `Nesprávný formát typu dopravného prostriedka`,
+    TYPE_MONGO_ID: `Nesprávný formát identifikacného čísla`,
+    TYPE_PAGE_NUMBER_INT: `Nesprávný formát číslo strany`,
+    TYPE_PAGE_SIZE_INT: `Nesprávný formát veľkosť strany`,
+    TYPE_UNIQUE: `Typ dopravného postriedka už existuje`,
+
+    VEHICLE_COURIER_ID_INT: `Nesprávný formát identifikacného čísla kuriéra`,
+    VEHICLE_NAME_LENGHT: `Minimálna dlžka názvu dopravného prostriedka je 3 a maximalná je 64`,
+    VEHICLE_NAME_ASCII: `Nesprávný formát názvu dopravného prostriedka`,
+    VEHICLE_MONGO_ID: `Nesprávný formát identifikacného čísla`,
+    VEHICLE_PAGE_NUMBER_INT: `Nesprávný formát číslo strany`,
+    VEHICLE_PAGE_SIZE_INT: `Nesprávný formát veľkosť strany`,
 };

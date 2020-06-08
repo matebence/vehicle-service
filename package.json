@@ -1,0 +1,37 @@
+{
+  "name": "vehicles-service",
+  "version": "1.0.0",
+  "description": "Vehicle service for Blesk microservice application",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "start-server": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matebence/vehicles-service.git"
+  },
+  "keywords": [
+    "Microservices"
+  ],
+  "author": "Bence Máté",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/matebence/vehicles-service/issues"
+  },
+  "homepage": "https://github.com/matebence/vehicles-service#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-hateoas-links": "^1.1.0",
+    "express-validator": "^5.3.0",
+    "helmet": "^3.22.0",
+    "mongoose": "^5.9.18",
+    "mongoose-delete": "^0.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

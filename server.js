@@ -22,8 +22,8 @@ client.load({
     auth: {user: node.cloud.config.username, pass: node.cloud.config.password}
 }).then(config => {
     config.bootstrap = node;
-    console.log(config);
 
+    require("./app/component/eureka.component")(app, config);
 
     return app.listen(node.server.port);
 }).then(() => {

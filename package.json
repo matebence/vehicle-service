@@ -23,6 +23,7 @@
   "homepage": "https://github.com/matebence/vehicles-service#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cloud-config-client": "^1.5.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-hateoas-links": "^1.1.0",

@@ -1,6 +1,7 @@
 const hateoasLinker = require('express-hateoas-links');
 const expressValidator = require('express-validator');
 const node = require('./resources/bootstrap');
+const client = require("cloud-config-client");
 const bodyParser = require('body-parser');
 const express = require('express');
 const helmet = require('helmet');
@@ -14,6 +15,17 @@ app.use(hateoasLinker);
 app.use(helmet());
 app.use(cors());
 
-app.listen(5200, () => {
-    console.log(`Server beží na porte ${5200}`)
-});
+client.load({
+    endpoint: node.cloud.config.uri,
+    name: node.application.name,
+    profiles: node.profiles.active,
+    auth: {user: node.cloud.config.username, pass: node.cloud.config.password}
+}).then(config => {
+    config.bootstrap = node;
+    console.log(config);
+
+
+    return app.listen(node.server.port);
+}).then(() => {
+    console.log(`Server beží na porte ${node.server.port}`)
+}).catch(console.error);

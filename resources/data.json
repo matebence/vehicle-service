@@ -17,12 +17,12 @@
     {
       "name": "VW Golf",
       "courierId": "5",
-      "typeId": "5ede132ad2316a1df0dd95f1"
+      "type": "5ede132ad2316a1df0dd95f1"
     },
     {
       "name": "Author A-Gang SE",
       "courierId": "5",
-      "typeId": "5ede132ad2316a1df0dd95f0"
+      "type": "5ede132ad2316a1df0dd95f0"
     }
   ]
 }

@@ -186,7 +186,7 @@ exports.update = {
         }
     ],
     inDatabase: (req, res, next) => {
-        return Promise.all([Types.startSession(), Types.findByIdAndUpdate(req.params.id, req.body)]).then(([session, data]) => {
+        return Promise.all([Types.startSession(), Types.findOneAndUpdate({_id: req.params.id}, req.body)]).then(([session, data]) => {
             session.startTransaction();
             if (data) {
                 session.commitTransaction().then(() => {

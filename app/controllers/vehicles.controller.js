@@ -37,7 +37,7 @@ exports.create = {
             .isAscii(['sk-SK']).withMessage(strings.VEHICLE_NAME_ASCII),
         check('courierId')
             .isInt({min: 1}).withMessage(strings.VEHICLE_COURIER_ID_INT),
-        check('typeId')
+        check('type')
             .isMongoId().withMessage(strings.TYPE_MONGO_ID),
 
         (req, res, next) => {
@@ -171,7 +171,7 @@ exports.update = {
             .isAscii(['sk-SK']).withMessage(strings.VEHICLE_NAME_ASCII),
         check('courierId')
             .isInt({min: 1}).withMessage(strings.VEHICLE_COURIER_ID_INT),
-        check('typeId')
+        check('type')
             .isMongoId().withMessage(strings.TYPE_MONGO_ID),
 
         (req, res, next) => {
@@ -189,7 +189,7 @@ exports.update = {
         }
     ],
     inDatabase: (req, res, next) => {
-        return Promise.all([Vehicles.startSession(), Vehicles.findByIdAndUpdate(req.params.id, req.body)]).then(([session, data]) => {
+        return Promise.all([Vehicles.startSession(), Vehicles.findOneAndUpdate({_id: req.params.id}, req.body)]).then(([session, data]) => {
             session.startTransaction();
             if (data) {
                 session.commitTransaction().then(() => {
@@ -249,7 +249,7 @@ exports.get = {
         }
     ],
     inDatabase: (req, res, next) => {
-        return Promise.all([Vehicles.startSession(), Vehicles.findOne({_id: req.params.id, deleted: false }).populate({path:"typeId", model:"types"})]).then(([session, data]) => {
+        return Promise.all([Vehicles.startSession(), Vehicles.findOne({_id: req.params.id, deleted: false }).populate({path:"type", model:"types"})]).then(([session, data]) => {
             session.startTransaction();
             if (data) {
                 session.commitTransaction().then(() => {
@@ -313,7 +313,7 @@ exports.getAll = {
         }
     ],
     inDatabase: (req, res, next) => {
-        return Promise.all([Vehicles.startSession(), Vehicles.find({deleted: false}).populate({path:"typeId", model:"types"}).sort('createdAt').skip((Number(req.params.pageNumber) - 1) * Number(req.params.pageSize)).limit(Number(req.params.pageSize))]).then(([session, data]) => {
+        return Promise.all([Vehicles.startSession(), Vehicles.find({deleted: false}).populate({path:"type", model:"types"}).sort('createdAt').skip((Number(req.params.pageNumber) - 1) * Number(req.params.pageSize)).limit(Number(req.params.pageSize))]).then(([session, data]) => {
             session.startTransaction();
             if (data.length > 0 || data !== undefined) {
                 session.commitTransaction().then(() => {
@@ -393,7 +393,7 @@ exports.search = {
             if ((Number(pagination.pageNumber) * Number(pagination.pageSize)) < count) hateosLinks.push({rel: "has-next", method: "POST", href: `${req.protocol}://${req.get('host')}/api/vehicles/search`});
         });
 
-        return Promise.all([Vehicles.startSession(), Vehicles.find({deleted: false, ...search}).populate({path:"typeId", model:"types"}).sort(order).skip((Number(pagination.pageNumber) - 1) * Number(pagination.pageSize)).limit(Number(pagination.pageSize))]).then(([session, data]) => {
+        return Promise.all([Vehicles.startSession(), Vehicles.find({deleted: false, ...search}).populate({path:"type", model:"types"}).sort(order).skip((Number(pagination.pageNumber) - 1) * Number(pagination.pageSize)).limit(Number(pagination.pageSize))]).then(([session, data]) => {
             session.startTransaction();
             if (data.length > 0 || data !== undefined) {
                 session.commitTransaction().then(() => {

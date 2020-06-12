@@ -1,6 +1,6 @@
 module.exports = (mongoose, schema, model) => {
     const mongooseDelete = require('mongoose-delete');
-    return model("vehicles", new schema(
+    const vehiclesSchema = new schema(
         {
             name: {
                 type: String,
@@ -10,12 +10,14 @@ module.exports = (mongoose, schema, model) => {
                 type: Number,
                 required: true
             },
-            typeId: {
+            type: {
                 type: schema.Types.ObjectId,
                 ref: "types",
                 required: true
             }
         },
         {collection: "vehicles", timestamps: {createdAt: 'createdAt'}}
-    ).plugin(mongooseDelete, {deletedAt: true}));
+    ).plugin(mongooseDelete, {deletedAt: true});
+
+    return model("vehicles", vehiclesSchema);
 };

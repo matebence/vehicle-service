@@ -28,6 +28,7 @@ module.exports = {
     TYPE_MONGO_ID: `Nesprávný formát identifikacného čísla`,
     TYPE_PAGE_NUMBER_INT: `Nesprávný formát číslo strany`,
     TYPE_PAGE_SIZE_INT: `Nesprávný formát veľkosť strany`,
+    TYPE_COLUMN_NAME_MATCHES: `Nesprávný formát názov stľpca`,
     TYPE_UNIQUE: `Typ dopravného postriedka už existuje`,
 
     VEHICLE_COURIER_ID_INT: `Nesprávný formát identifikacného čísla kuriéra`,
@@ -35,5 +36,6 @@ module.exports = {
     VEHICLE_NAME_ASCII: `Nesprávný formát názvu dopravného prostriedka`,
     VEHICLE_MONGO_ID: `Nesprávný formát identifikacného čísla`,
     VEHICLE_PAGE_NUMBER_INT: `Nesprávný formát číslo strany`,
-    VEHICLE_PAGE_SIZE_INT: `Nesprávný formát veľkosť strany`,
+    VEHICLE_COLUMN_NAME_MATCHES: `Nesprávný formát názov stľpca`,
+    VEHICLE_PAGE_SIZE_INT: `Nesprávný formát veľkosť strany`
 };

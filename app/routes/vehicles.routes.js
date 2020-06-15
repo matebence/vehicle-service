@@ -14,5 +14,7 @@ module.exports = app => {
 
     router.post("/search", vehicles.search.authorize, vehicles.search.checkBody, vehicles.search.inDatabase);
 
+    router.post("/join/:columnName", vehicles.join.authorize, vehicles.join.checkBody, vehicles.join.validate, vehicles.join.inDatabase);
+
     app.use('/api/vehicles', router);
 };

@@ -286,12 +286,12 @@ exports.get = {
         const proxy = Users.resilient("USER-SERVICE");
         const users = req.vehicles.courier;
 
-        proxy.post('/users/join/userId', {data: [req.vehicles.courier]}).then(response => {
+        proxy.post('/users/join/accountId', {data: [req.vehicles.courier]}).then(response => {
             if (response.status >= 300 && !'error' in response.data) return new Error(strings.PROXY_ERR);
             database.redis.setex(crypto.MD5(`users-${users}`).toString(), 3600, JSON.stringify(response.data));
 
             const vehicles = [req.vehicles].map(e => {
-                const {firstName, lastName, userName, email} = response.data.find(x => x.userId === e.courier);
+                const {firstName, lastName, userName, email} = response.data.find(x => x.accountId === e.courier);
                 return {...e._doc, courier: {courierId: e.courier, name: `${firstName} ${lastName}`, userName: userName, email: email}};
             }).pop();
 
@@ -313,7 +313,7 @@ exports.get = {
             } else{
                 try{
                     const vehicles = [req.vehicles].map(e => {
-                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.userId === e.courier);
+                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.accountId === e.courier);
                         return {...e._doc, courier: {courierId: e.courier, name: `${firstName} ${lastName}`, userName: userName, email: email}};
                     }).pop();
 
@@ -399,12 +399,12 @@ exports.getAll = {
         const proxy = Users.resilient("USER-SERVICE");
         const users = req.vehicles.filter(e => e.courier).map(x => x.courier);
 
-        proxy.post('/users/join/userId', {data: users}).then(response => {
+        proxy.post('/users/join/accountId', {data: users}).then(response => {
             if (response.status >= 300 && !'error' in response.data) return new Error(strings.PROXY_ERR);
-            response.data.forEach(e => {database.redis.setex(crypto.MD5(`users-${e.userId}`).toString(), 3600, JSON.stringify(e))});
+            response.data.forEach(e => {database.redis.setex(crypto.MD5(`users-${e.accountId}`).toString(), 3600, JSON.stringify(e))});
 
             const vehicles = req.vehicles.map(e => {
-                const {userName, email} = response.data.find(x => x.userId === e.courier);
+                const {userName, email} = response.data.find(x => x.accountId === e.courier);
                 return {...e._doc, courier: {courierId: e.courier, userName: userName, email: email}};
             });
 
@@ -427,7 +427,7 @@ exports.getAll = {
                 try{
                     data = JSON.stringify(data.map(e => {return JSON.parse(e)}));
                     const vehicles = req.vehicles.map(e => {
-                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.userId === e.courier);
+                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.accountId === e.courier);
                         return {...e._doc, courier: {courierId: e.courier, name: `${firstName} ${lastName}`, userName: userName, email: email}};
                     });
 
@@ -531,12 +531,12 @@ exports.search = {
         const proxy = Users.resilient("USER-SERVICE");
         const users = req.vehicles.filter(e => e.courier).map(x => x.courier);
 
-        proxy.post('/users/join/userId', {data: users}).then(response => {
+        proxy.post('/users/join/accountId', {data: users}).then(response => {
             if (response.status >= 300 && !'error' in response.data) return new Error(strings.PROXY_ERR);
-            response.data.forEach(e => {database.redis.setex(crypto.MD5(`users-${e.userId}`).toString(), 3600, JSON.stringify(e))});
+            response.data.forEach(e => {database.redis.setex(crypto.MD5(`users-${e.accountId}`).toString(), 3600, JSON.stringify(e))});
 
             const vehicles = req.vehicles.map(e => {
-                const {userName, email} = response.data.find(x => x.userId === e.courier);
+                const {userName, email} = response.data.find(x => x.accountId === e.courier);
                 return {...e._doc, courier: {courierId: e.courier, userName: userName, email: email}};
             });
 
@@ -559,7 +559,7 @@ exports.search = {
                 try{
                     data = JSON.stringify(data.map(e => {return JSON.parse(e)}));
                     const vehicles = req.vehicles.map(e => {
-                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.userId === e.courier);
+                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.accountId === e.courier);
                         return {...e._doc, courier: {courierId: e.courier, name: `${firstName} ${lastName}`, userName: userName, email: email}};
                     });
 

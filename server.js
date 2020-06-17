@@ -23,17 +23,16 @@ client.load({
 }).then(config => {
     config.bootstrap = node;
 
-    require("./app/models")(app, config);
-
     require("./app/component/eureka.component")(app, config);
     require("./app/component/zipkin.component")(app, config);
+    require("./app/component/resilient.component")(app, config, () => {
 
-    require("./app/routes/auth.routes")(app, config);
-
-    require("./app/routes/vehicles.routes")(app);
-    require("./app/routes/types.routes")(app);
-
-    require("./app/routes/errors.routes")(app);
+        require("./app/models")(app, config);
+        require("./app/routes/auth.routes")(app, config);
+        require("./app/routes/vehicles.routes")(app);
+        require("./app/routes/types.routes")(app);
+        require("./app/routes/errors.routes")(app);
+    });
 
     return app.listen(node.server.port);
 }).then(() => {

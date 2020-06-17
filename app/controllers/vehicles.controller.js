@@ -1,8 +1,10 @@
 const {validationResult, check} = require('express-validator/check');
+const crypto = require('crypto-js');
 
 const strings = require('../../resources/strings');
 const database = require("../models");
 
+const Users = require('../component/resilient.component');
 const Vehicles = database.vehicles;
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -35,7 +37,7 @@ exports.create = {
         check('name')
             .isLength({min: 3, max: 64}).withMessage(strings.VEHICLE_NAME_LENGHT)
             .isAscii(['sk-SK']).withMessage(strings.VEHICLE_NAME_ASCII),
-        check('courierId')
+        check('courier')
             .isInt({min: 1}).withMessage(strings.VEHICLE_COURIER_ID_INT),
         check('type')
             .isMongoId().withMessage(strings.TYPE_MONGO_ID),
@@ -169,7 +171,7 @@ exports.update = {
         check('name')
             .isLength({min: 3, max: 64}).withMessage(strings.VEHICLE_NAME_LENGHT)
             .isAscii(['sk-SK']).withMessage(strings.VEHICLE_NAME_ASCII),
-        check('courierId')
+        check('courier')
             .isInt({min: 1}).withMessage(strings.VEHICLE_COURIER_ID_INT),
         check('type')
             .isMongoId().withMessage(strings.TYPE_MONGO_ID),
@@ -254,9 +256,11 @@ exports.get = {
             if (data) {
                 session.commitTransaction().then(() => {
                     session.endSession();
-                    return res.status(200).json(data, [
+                    req.vehicles = data;
+                    req.hateosLinks = [
                         {rel: "self", method: "GET", href: req.protocol + '://' + req.get('host') + req.originalUrl},
-                        {rel: "all-vehicles", method: "GET", href: `${req.protocol}://${req.get('host')}/api/vehicles/page/${DEFAULT_PAGE_NUMBER}/limit/${DEFAULT_PAGE_SIZE}`}]);
+                        {rel: "all-vehicles", method: "GET", href: `${req.protocol}://${req.get('host')}/api/vehicles/page/${DEFAULT_PAGE_NUMBER}/limit/${DEFAULT_PAGE_SIZE}`}];
+                    next();
                 });
             } else {
                 session.abortTransaction().then(() => {
@@ -276,6 +280,53 @@ exports.get = {
                 error: true,
                 nav: `${req.protocol}://${req.get('host')}`
             });
+        });
+    },
+    fetchDataFromService: (req, res, next) => {
+        const proxy = Users.resilient("USER-SERVICE");
+        const users = req.vehicles.courier;
+
+        proxy.post('/users/join/userId', {data: [req.vehicles.courier]}).then(response => {
+            if (response.status >= 300 && !'error' in response.data) return new Error(strings.PROXY_ERR);
+            database.redis.setex(crypto.MD5(`users-${users}`).toString(), 3600, JSON.stringify(response.data));
+
+            const vehicles = [req.vehicles].map(e => {
+                const {firstName, lastName, userName, email} = response.data.find(x => x.userId === e.courier);
+                return {...e._doc, courier: {courierId: e.courier, name: `${firstName} ${lastName}`, userName: userName, email: email}};
+            }).pop();
+
+            return res.status(200).json(vehicles, req.hateosLinks);
+        }).catch(err => {
+            req.cacheId = users;
+            next();
+        });
+    },
+    fetchDataFromCache: (req, res, next) => {
+        database.redis.get(crypto.MD5(`users-${req.cacheId}`).toString(), (err, data) => {
+            if (!data) {
+                return res.status(500).json({
+                    timestamp: new Date().toISOString(),
+                    message: strings.VEHICLE_NOT_FOUND,
+                    error: true,
+                    nav: `${req.protocol}://${req.get('host')}`
+                });
+            } else{
+                try{
+                    const vehicles = [req.vehicles].map(e => {
+                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.userId === e.courier);
+                        return {...e._doc, courier: {courierId: e.courier, name: `${firstName} ${lastName}`, userName: userName, email: email}};
+                    }).pop();
+
+                    return res.status(200).json(vehicles, req.hateosLinks);
+                }catch(err){
+                    return res.status(500).json({
+                        timestamp: new Date().toISOString(),
+                        message: strings.VEHICLE_NOT_FOUND,
+                        error: true,
+                        nav: `${req.protocol}://${req.get('host')}`
+                    });
+                }
+            }
         });
     }
 };
@@ -318,9 +369,11 @@ exports.getAll = {
             if (data.length > 0 || data !== undefined) {
                 session.commitTransaction().then(() => {
                     session.endSession();
-                    return res.status(206).json({data}, [
+                    req.vehicles = data;
+                    req.hateosLinks = [
                         {rel: "self", method: "GET", href: req.protocol + '://' + req.get('host') + req.originalUrl},
-                        {rel: "next-range", method: "GET", href: `${req.protocol}://${req.get('host')}/api/vehicles/page/${1 + Number(req.params.pageNumber)}/limit/${req.params.pageSize}`}]);
+                        {rel: "next-range", method: "GET", href: `${req.protocol}://${req.get('host')}/api/vehicles/page/${1 + Number(req.params.pageNumber)}/limit/${req.params.pageSize}`}];
+                    next();
                 });
             } else {
                 session.abortTransaction().then(() => {
@@ -340,6 +393,54 @@ exports.getAll = {
                 error: true,
                 nav: `${req.protocol}://${req.get('host')}`
             });
+        });
+    },
+    fetchDataFromService: (req, res, next) => {
+        const proxy = Users.resilient("USER-SERVICE");
+        const users = req.vehicles.filter(e => e.courier).map(x => x.courier);
+
+        proxy.post('/users/join/userId', {data: users}).then(response => {
+            if (response.status >= 300 && !'error' in response.data) return new Error(strings.PROXY_ERR);
+            response.data.forEach(e => {database.redis.setex(crypto.MD5(`users-${e.userId}`).toString(), 3600, JSON.stringify(e))});
+
+            const vehicles = req.vehicles.map(e => {
+                const {userName, email} = response.data.find(x => x.userId === e.courier);
+                return {...e._doc, courier: {courierId: e.courier, userName: userName, email: email}};
+            });
+
+            return res.status(206).json({data: vehicles}, req.hateosLinks);
+        }).catch(err => {
+            req.cacheId = users;
+            next();
+        });
+    },
+    fetchDataFromCache: (req, res, next) => {
+        database.redis.mget(req.cacheId.map(e => {return crypto.MD5(`users-${e}`).toString()}), (err, data) => {
+            if (!data) {
+                return res.status(500).json({
+                    timestamp: new Date().toISOString(),
+                    message: strings.VEHICLE_NOT_FOUND,
+                    error: true,
+                    nav: `${req.protocol}://${req.get('host')}`
+                });
+            } else {
+                try{
+                    data = JSON.stringify(data.map(e => {return JSON.parse(e)}));
+                    const vehicles = req.vehicles.map(e => {
+                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.userId === e.courier);
+                        return {...e._doc, courier: {courierId: e.courier, name: `${firstName} ${lastName}`, userName: userName, email: email}};
+                    });
+
+                    return res.status(206).json({data: vehicles}, req.hateosLinks);
+                } catch(err) {
+                    return res.status(500).json({
+                        timestamp: new Date().toISOString(),
+                        message: strings.VEHICLE_NOT_FOUND,
+                        error: true,
+                        nav: `${req.protocol}://${req.get('host')}`
+                    });
+                }
+            }
         });
     }
 };
@@ -402,7 +503,9 @@ exports.search = {
             if (data.length > 0 || data !== undefined) {
                 session.commitTransaction().then(() => {
                     session.endSession();
-                    return res.status(200).json({data}, hateosLinks);
+                    req.vehicles = data;
+                    req.hateosLinks = hateosLinks;
+                    next();
                 });
             } else {
                 session.abortTransaction().then(() => {
@@ -416,13 +519,60 @@ exports.search = {
                 });
             }
         }).catch(err => {
-            console.log(err);
             return res.status(500).json({
                 timestamp: new Date().toISOString(),
                 message: strings.VEHICLE_NOT_FOUND,
                 error: true,
                 nav: `${req.protocol}://${req.get('host')}`
             });
+        });
+    },
+    fetchDataFromService: (req, res, next) => {
+        const proxy = Users.resilient("USER-SERVICE");
+        const users = req.vehicles.filter(e => e.courier).map(x => x.courier);
+
+        proxy.post('/users/join/userId', {data: users}).then(response => {
+            if (response.status >= 300 && !'error' in response.data) return new Error(strings.PROXY_ERR);
+            response.data.forEach(e => {database.redis.setex(crypto.MD5(`users-${e.userId}`).toString(), 3600, JSON.stringify(e))});
+
+            const vehicles = req.vehicles.map(e => {
+                const {userName, email} = response.data.find(x => x.userId === e.courier);
+                return {...e._doc, courier: {courierId: e.courier, userName: userName, email: email}};
+            });
+
+            return res.status(200).json({data: vehicles}, req.hateosLinks);
+        }).catch(err => {
+            req.cacheId = users;
+            next();
+        });
+    },
+    fetchDataFromCache: (req, res, next) => {
+        database.redis.mget(req.cacheId.map(e => {return crypto.MD5(`users-${e}`).toString()}), (err, data) => {
+            if (!data) {
+                return res.status(500).json({
+                    timestamp: new Date().toISOString(),
+                    message: strings.VEHICLE_NOT_FOUND,
+                    error: true,
+                    nav: `${req.protocol}://${req.get('host')}`
+                });
+            } else {
+                try{
+                    data = JSON.stringify(data.map(e => {return JSON.parse(e)}));
+                    const vehicles = req.vehicles.map(e => {
+                        const {firstName, lastName, userName, email} = JSON.parse(data).find(x => x.userId === e.courier);
+                        return {...e._doc, courier: {courierId: e.courier, name: `${firstName} ${lastName}`, userName: userName, email: email}};
+                    });
+
+                    return res.status(200).json({data: vehicles}, req.hateosLinks);
+                } catch(err) {
+                    return res.status(500).json({
+                        timestamp: new Date().toISOString(),
+                        message: strings.VEHICLE_NOT_FOUND,
+                        error: true,
+                        nav: `${req.protocol}://${req.get('host')}`
+                    });
+                }
+            }
         });
     }
 };

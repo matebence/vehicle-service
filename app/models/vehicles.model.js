@@ -6,7 +6,7 @@ module.exports = (mongoose, schema, model) => {
                 type: String,
                 required: true,
             },
-            courierId: {
+            courier: {
                 type: Number,
                 required: true
             },

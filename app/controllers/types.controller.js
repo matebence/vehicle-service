@@ -34,7 +34,7 @@ exports.create = {
     validate: [
         check('name')
             .isLength({min: 3, max: 64}).withMessage(strings.TYPE_NAME_LENGHT)
-            .isAscii(['sk-SK']).withMessage(strings.TYPE_NAME_ASCII),
+            .matches(/^[\D ]+$/).withMessage(strings.TYPE_NAME_MATCHES),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -169,7 +169,7 @@ exports.update = {
             .isMongoId().withMessage(strings.TYPE_MONGO_ID),
         check('name')
             .isLength({min: 3, max: 64}).withMessage(strings.TYPE_NAME_LENGHT)
-            .isAscii(['sk-SK']).withMessage(strings.TYPE_NAME_ASCII),
+            .matches(/^[\D ]+$/).withMessage(strings.TYPE_NAME_MATCHES),
 
         (req, res, next) => {
             const errors = validationResult(req);

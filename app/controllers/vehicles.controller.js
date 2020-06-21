@@ -36,7 +36,7 @@ exports.create = {
     validate: [
         check('name')
             .isLength({min: 3, max: 64}).withMessage(strings.VEHICLE_NAME_LENGHT)
-            .isAscii(['sk-SK']).withMessage(strings.VEHICLE_NAME_ASCII),
+            .matches(/^[\D ]+$/).withMessage(strings.VEHICLE_NAME_MATCHES),
         check('courier')
             .isInt({min: 1}).withMessage(strings.VEHICLE_COURIER_ID_INT),
         check('type')
@@ -170,7 +170,7 @@ exports.update = {
             .isMongoId().withMessage(strings.VEHICLE_MONGO_ID),
         check('name')
             .isLength({min: 3, max: 64}).withMessage(strings.VEHICLE_NAME_LENGHT)
-            .isAscii(['sk-SK']).withMessage(strings.VEHICLE_NAME_ASCII),
+            .matches(/^[\D ]+$/).withMessage(strings.VEHICLE_NAME_MATCHES),
         check('courier')
             .isInt({min: 1}).withMessage(strings.VEHICLE_COURIER_ID_INT),
         check('type')

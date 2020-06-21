@@ -25,7 +25,7 @@ module.exports = {
     VEHICLE_NOT_FOUND: `Ľutujeme ale nenašiel sa žiadný dopravný prostriedok`,
 
     TYPE_NAME_LENGHT: `Minimálna dlžka typu dopravného prostriedka je 3 a maximalná je 64`,
-    TYPE_NAME_ASCII: `Nesprávný formát typu dopravného prostriedka`,
+    TYPE_NAME_MATCHES: `Nesprávný formát typu dopravného prostriedka`,
     TYPE_MONGO_ID: `Nesprávný formát identifikacného čísla`,
     TYPE_PAGE_NUMBER_INT: `Nesprávný formát číslo strany`,
     TYPE_PAGE_SIZE_INT: `Nesprávný formát veľkosť strany`,
@@ -34,7 +34,7 @@ module.exports = {
 
     VEHICLE_COURIER_ID_INT: `Nesprávný formát identifikacného čísla kuriéra`,
     VEHICLE_NAME_LENGHT: `Minimálna dlžka názvu dopravného prostriedka je 3 a maximalná je 64`,
-    VEHICLE_NAME_ASCII: `Nesprávný formát názvu dopravného prostriedka`,
+    VEHICLE_NAME_MATCHES: `Nesprávný formát názvu dopravného prostriedka`,
     VEHICLE_MONGO_ID: `Nesprávný formát identifikacného čísla`,
     VEHICLE_PAGE_NUMBER_INT: `Nesprávný formát číslo strany`,
     VEHICLE_COLUMN_NAME_MATCHES: `Nesprávný formát názov stľpca`,
